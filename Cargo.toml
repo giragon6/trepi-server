@@ -6,4 +6,5 @@ edition = "2024"
 [dependencies]
 actix-web = "4"
 sqlx = { version = "0.8.6", features = ["postgres", "runtime-tokio-native-tls" ] }
-reqwest = { version = "0.11", features = ["json", "tls"]}
+reqwest = { version = "0.12.15", features = ["json", "tls"]}
+serde = { version = "1.0.152", features = ["derive"] }
