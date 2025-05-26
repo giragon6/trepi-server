@@ -1,16 +1,18 @@
-use sqlx::{FromRow, PgPool};
+use sqlx::{FromRow};
+use sqlx::types::BigDecimal;
 use serde::{Deserialize, Serialize};
+use chrono;
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct FoodItem {
-    pub fdc_id: u32,
-    pub description: String,
+    pub fdc_id: i32,
+    pub item_description: String,
     pub brand_owner: String,
     pub brand_name: Option<String>,
-    pub gtin_upc: u64,
+    pub gtin_upc: i64,
     pub ingredients_str: String,
     pub not_a_significant_source_of: Option<String>,
-    pub serving_size: f32,
+    pub serving_size: String,
     pub serving_size_unit: String,
     pub household_serving: String,
     pub branded_food_category: Option<String>,
@@ -19,15 +21,14 @@ pub struct FoodItem {
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct Nutrient {
-    pub fdc_id: u32,
-    pub nutrient_id: u32,
-    pub amount: f32 // per 100g
+    pub food_id: i32,
+    pub nutrient_id: i32,
+    pub amount: BigDecimal // per 100g
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct FoodDetails {
     pub food: FoodItem,
-    pub ingredients: Vec<String>,
     pub nutrients: Vec<Nutrient>,
 }
 
@@ -43,7 +44,7 @@ pub struct User {
     locale: Option<String>,
     access_token: Option<String>,
     refresh_token: Option<String>,
-    token_expires_at: Option<Chrono::DateTime<chrono::Utc>>,
-    created_at: Chrono::DateTime<chrono::Utc>,
-    updated_at: Chrono::DateTime<chrono::Utc>,
+    token_expires_at: Option<chrono::DateTime<chrono::Utc>>,
+    created_at: chrono::DateTime<chrono::Utc>,
+    updated_at: chrono::DateTime<chrono::Utc>,
 }
