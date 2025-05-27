@@ -1,3 +1,4 @@
+use bigdecimal::BigDecimalRef;
 use sqlx::{FromRow};
 use sqlx::types::BigDecimal;
 use serde::{Deserialize, Serialize};
@@ -7,23 +8,33 @@ use chrono;
 pub struct FoodItem {
     pub fdc_id: i32,
     pub item_description: String,
-    pub brand_owner: String,
+    pub brand_owner: Option<String>,
     pub brand_name: Option<String>,
-    pub gtin_upc: i64,
-    pub ingredients_str: String,
+    pub gtin_upc: Option<String>,
+    pub ingredients_str: Option<String>,
     pub not_a_significant_source_of: Option<String>,
-    pub serving_size: String,
-    pub serving_size_unit: String,
-    pub household_serving: String,
+    pub serving_size: Option<String>,
+    pub serving_size_unit: Option<String>,
+    pub household_serving: Option<String>,
     pub branded_food_category: Option<String>,
-    pub short_description: Option<String>,
+    pub food_category_id: Option<String>,
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct Nutrient {
+    pub food_nutrient_id: i32,
     pub food_id: i32,
     pub nutrient_id: i32,
-    pub amount: BigDecimal // per 100g
+    pub amount: BigDecimal, // per 100g
+    pub data_points: Option<i32>,
+    pub derivation_id: Option<i32>,
+    pub min: Option<BigDecimal>, // per 100g
+    pub max: Option<BigDecimal>, // per 100g
+    pub median: Option<BigDecimal>, // per 100g
+    pub loq: Option<BigDecimal>, // Limit of Quantitation, per 100g
+    pub footnote: Option<String>,
+    pub min_year_acquired: Option<BigDecimal>, // year
+    pub percent_daily_value: Option<BigDecimal>, // per 100g
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
