@@ -94,9 +94,9 @@ pub async fn food_request_handler(
 
     let food_result: Result<FoodItem, sqlx::Error> = sqlx::query_as!(
             FoodItem,
-            r#"SELECT fdc_id, item_description, brand_owner, brand_name, gtin_upc, ingredients_str,
+            r#"SELECT fdc_id, data_type, item_description, food_category_id, brand_owner, brand_name, gtin_upc, ingredients_str,
             not_a_significant_source_of, serving_size, serving_size_unit,
-            household_serving, branded_food_category, food_category_id
+            household_serving, branded_food_category
             FROM foods WHERE fdc_id = $1"#,
             fdc_id
         )
@@ -116,7 +116,7 @@ pub async fn food_request_handler(
 
     let nutrients_result: Result<Vec<Nutrient>, sqlx::Error> = sqlx::query_as!(
         Nutrient,
-        r#"SELECT food_nutrient_id, food_id, nutrient_id, amount, data_points, derivation_id, min, max, median, loq, footnote, min_year_acquired, percent_daily_value FROM nutrients WHERE food_id = $1"#,
+        r#"SELECT food_nutrient_id, food_id, nutrient_id, amount, data_points, derivation_id, min, max, median, loq, footnote, percent_daily_value FROM nutrients WHERE food_id = $1"#,
         fdc_id
     )
     .fetch_all(pool.get_ref())

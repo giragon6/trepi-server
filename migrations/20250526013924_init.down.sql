@@ -1,5 +1,0 @@
-DROP TABLE IF EXISTS foods;
-
-DROP TABLE IF EXISTS nutrients;
-
-DROP TABLE IF EXISTS users;

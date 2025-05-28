@@ -1,4 +1,3 @@
-use bigdecimal::BigDecimalRef;
 use sqlx::{FromRow};
 use sqlx::types::BigDecimal;
 use serde::{Deserialize, Serialize};
@@ -7,7 +6,9 @@ use chrono;
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct FoodItem {
     pub fdc_id: i32,
-    pub item_description: String,
+    pub data_type: String,
+    pub item_description: Option<String>,
+    pub food_category_id: Option<String>,
     pub brand_owner: Option<String>,
     pub brand_name: Option<String>,
     pub gtin_upc: Option<String>,
@@ -17,7 +18,6 @@ pub struct FoodItem {
     pub serving_size_unit: Option<String>,
     pub household_serving: Option<String>,
     pub branded_food_category: Option<String>,
-    pub food_category_id: Option<String>,
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
@@ -26,14 +26,13 @@ pub struct Nutrient {
     pub food_id: i32,
     pub nutrient_id: i32,
     pub amount: BigDecimal, // per 100g
-    pub data_points: Option<i32>,
-    pub derivation_id: Option<i32>,
+    pub data_points: Option<BigDecimal>,
+    pub derivation_id: Option<BigDecimal>,
     pub min: Option<BigDecimal>, // per 100g
     pub max: Option<BigDecimal>, // per 100g
     pub median: Option<BigDecimal>, // per 100g
     pub loq: Option<BigDecimal>, // Limit of Quantitation, per 100g
     pub footnote: Option<String>,
-    pub min_year_acquired: Option<BigDecimal>, // year
     pub percent_daily_value: Option<BigDecimal>, // per 100g
 }
 
