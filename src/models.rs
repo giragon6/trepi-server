@@ -38,8 +38,20 @@ pub struct Nutrient {
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct FoodDetails {
-    pub food: FoodItem,
-    pub nutrients: Vec<Nutrient>,
+    pub fdc_id: Option<i32>,
+    pub data_type: Option<String>,
+    pub item_description: Option<String>,
+    pub food_category_id: Option<String>,
+    pub brand_owner: Option<String>,
+    pub brand_name: Option<String>,
+    pub gtin_upc: Option<String>,
+    pub ingredients_str: Option<String>,
+    pub not_a_significant_source_of: Option<String>,
+    pub serving_size: Option<String>,
+    pub serving_size_unit: Option<String>,
+    pub household_serving: Option<String>,
+    pub branded_food_category: Option<String>,
+    pub nutrients: Option<Vec<sqlx::types::JsonValue>>,
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]

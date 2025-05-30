@@ -92,53 +92,45 @@ pub async fn food_request_handler(
 ) -> ActixResult<HttpResponse, actix_web::Error> {
     let fdc_id = fdc_id.into_inner();
 
-    let food_result: Result<FoodItem, sqlx::Error> = sqlx::query_as!(
-            FoodItem,
-            r#"SELECT fdc_id, data_type, item_description, food_category_id, brand_owner, brand_name, gtin_upc, ingredients_str,
-            not_a_significant_source_of, serving_size, serving_size_unit,
-            household_serving, branded_food_category
-            FROM foods WHERE fdc_id = $1"#,
-            fdc_id
-        )
-        .fetch_one(pool.get_ref())
-        .await;
-
-    let food = match food_result {
-        Ok(f) => f,
-        Err(sqlx::Error::RowNotFound) => {
-            return Ok(HttpResponse::NotFound().json(json!({ "status": "error", "message": "Food not found" })));
-        }
-        Err(e) => {
-            error!("DB error: {:?}", e);
-            return Ok(HttpResponse::InternalServerError().json(json!({ "status": "error", "message": "Database error" })));
-        }
-    };
-
-    let nutrients_result: Result<Vec<Nutrient>, sqlx::Error> = sqlx::query_as!(
-        Nutrient,
-        r#"SELECT food_nutrient_id, food_id, nutrient_id, amount, data_points, derivation_id, min, max, median, loq, footnote, percent_daily_value FROM nutrients WHERE food_id = $1"#,
-        fdc_id
+    let food_details_result = sqlx::query_as!(
+        FoodDetails,
+        r#"SELECT 
+            fdc_id, 
+            data_type, 
+            item_description, 
+            food_category_id, 
+            brand_owner,
+            brand_name,
+            gtin_upc,
+            ingredients_str,
+            not_a_significant_source_of,
+            serving_size,
+            serving_size_unit,
+            household_serving,
+            branded_food_category,
+            nutrients
+         FROM food_with_nutrients 
+         WHERE fdc_id = $1"#,
+         fdc_id
     )
-    .fetch_all(pool.get_ref())
+    .fetch_one(pool.get_ref())
     .await;
 
-    let nutrients = match nutrients_result {
-        Ok(n) if !n.is_empty() => n,
-        Ok(_) => {
-            return Ok(HttpResponse::NotFound().json(json!({ "status": "error", "message": "No nutrients found for this food" })));
+    match food_details_result {
+        Ok(food_details) => {
+            Ok(HttpResponse::Ok().json(json!({
+                "status": "success",
+                "food": food_details
+            })))
+        }
+        Err(sqlx::Error::RowNotFound) => {
+            Ok(HttpResponse::NotFound().json(json!({"status":"error","message":"Food not found"})))
         }
         Err(e) => {
             error!("DB error: {:?}", e);
-            return Ok(HttpResponse::InternalServerError().json(json!({ "status": "error", "message": "Database error" })));
+            Ok(HttpResponse::InternalServerError().json(json!({"status":"error","message":"DB error"})))
         }
-    };
-
-    let food_details = FoodDetails {
-        food: food,
-        nutrients: nutrients,
-    };
-
-    Ok(HttpResponse::Ok().json(food_details))
+    }
 }
 
 pub fn configure_routes(cfg: &mut web::ServiceConfig) {

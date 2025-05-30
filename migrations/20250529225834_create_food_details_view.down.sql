@@ -1,0 +1,1 @@
+DROP VIEW IF EXISTS food_with_nutrients;
