@@ -1,16 +1,33 @@
-# build
-
-FROM rust:1.85 as builder
+FROM rust:1.75 as builder
 
 WORKDIR /app
-COPY . .
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
+COPY migrations ./migrations
+
+RUN cargo install sqlx-cli --no-default-features --features postgres
+RUN cargo sqlx prepare
+
+ENV SQLX_OFFLINE=true
 
 RUN cargo build --release
 
-# deploy
+FROM debian:bookworm-slim
 
-FROM gcr.io/distroless/cc-debian12:latest
-COPY --from=builder /app/target/release/trepi-server /usr/local/bin/trepi-server
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libssl3 \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
-ENV DATABASE_URL=${DATABASE_URL}
-CMD ["sh", "-c", "trepi-server"]
+
+COPY --from=builder /app/target/release/trepi-server /app/
+COPY --from=builder /usr/local/cargo/bin/sqlx /usr/local/bin/
+COPY migrations ./migrations
+
+RUN echo '#!/bin/bash\nset -e\nsqlx migrate run\nexec ./trepi-server' > start.sh && chmod +x start.sh
+
+EXPOSE 8000
+
+CMD ["./start.sh"]

@@ -1,4 +1,5 @@
 .env
+.env.local
 debug/
 target/
 **/*.rs.bk
