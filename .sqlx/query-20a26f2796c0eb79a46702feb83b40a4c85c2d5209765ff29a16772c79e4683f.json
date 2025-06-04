@@ -1,0 +1,100 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT \n            fdc_id, \n            data_type, \n            item_description, \n            food_category_id, \n            brand_owner,\n            brand_name,\n            gtin_upc,\n            ingredients_str,\n            not_a_significant_source_of,\n            serving_size,\n            serving_size_unit,\n            household_serving,\n            branded_food_category,\n            nutrients\n         FROM food_with_nutrients \n         WHERE fdc_id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "fdc_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "data_type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "item_description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "food_category_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "brand_owner",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "brand_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "gtin_upc",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "ingredients_str",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "not_a_significant_source_of",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "serving_size",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "serving_size_unit",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "household_serving",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 12,
+        "name": "branded_food_category",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "nutrients",
+        "type_info": "JsonbArray"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "20a26f2796c0eb79a46702feb83b40a4c85c2d5209765ff29a16772c79e4683f"
+}
