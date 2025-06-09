@@ -1,5 +1,5 @@
 use crate::{
-    models::{FoodDetails, FoodItem, Nutrient}, schema::FilterOptions
+    models::{FoodDetails, FoodItem, SimpleFoodItem}, schema::FilterOptions
 };
 use actix_web::{get, web, HttpResponse, Result as ActixResult};
 use serde_json::json;
@@ -17,16 +17,21 @@ pub async fn food_list_handler(
     filter_options: web::Query<FilterOptions>,
 ) -> ActixResult<HttpResponse, actix_web::Error> {
     let mut query = String::from(
-        "SELECT fdc_id, brand_owner, brand_name, gtin_upc, ingredient_str,
-        not_a_significant_source_of, serving_size, serving_size_unit,
-        household_serving, branded_food_category, short_description
-        FROM food_items",
+        r#"SELECT 
+            fdc_id,
+            data_type,
+            item_description
+        FROM foods"#
     );
 
     let mut conditions = Vec::new();
-    // if let Some(ref data_type) = filter_options.data_type {
-    //     conditions.push(format!("data_type = '{}'", data_type));
-    // }
+
+    if let Some (ref name) = filter_options.name {
+        conditions.push(format!("item_description ILIKE '%{}%'", name));
+    }
+    if let Some(ref data_type) = filter_options.data_type {
+        conditions.push(format!("data_type = '{}'", data_type));
+    }
     if let Some(ref brand_owner) = filter_options.brand_owner {
         conditions.push(format!("brand_owner ILIKE '%{}%'", brand_owner));
     }
@@ -62,7 +67,7 @@ pub async fn food_list_handler(
         query.push_str(&format!(" OFFSET {}", offset));
     }
 
-    let foods_result = sqlx::query_as::<_, FoodItem>(&query)
+    let foods_result = sqlx::query_as::<_, SimpleFoodItem>(&query)
         .fetch_all(pool.get_ref())
         .await;
 
@@ -92,8 +97,7 @@ pub async fn food_request_handler(
 ) -> ActixResult<HttpResponse, actix_web::Error> {
     let fdc_id = fdc_id.into_inner();
 
-    let food_details_result = sqlx::query_as!(
-        FoodDetails,
+    let food_details_result = sqlx::query_as::<_, FoodDetails>(
         r#"SELECT 
             fdc_id, 
             data_type, 
@@ -110,9 +114,9 @@ pub async fn food_request_handler(
             branded_food_category,
             nutrients
          FROM food_with_nutrients 
-         WHERE fdc_id = $1"#,
-         fdc_id
+         WHERE fdc_id = $1"#
     )
+    .bind(fdc_id)
     .fetch_one(pool.get_ref())
     .await;
 

@@ -21,6 +21,13 @@ pub struct FoodItem {
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
+pub struct SimpleFoodItem {
+    pub fdc_id: i32,
+    pub data_type: String,
+    pub item_description: Option<String>,
+}
+
+#[derive(Debug, FromRow, Serialize, Deserialize)]
 pub struct Nutrient {
     pub food_nutrient_id: i32,
     pub food_id: i32,

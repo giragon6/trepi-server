@@ -2,6 +2,7 @@ use serde::{Deserialize};
 
 #[derive(Debug, Deserialize)]
 pub struct FilterOptions {
+    pub name: Option<String>,
     pub data_type: Option<String>,
     pub page_size: Option<i32>, 
     pub page_number: Option<i32>,

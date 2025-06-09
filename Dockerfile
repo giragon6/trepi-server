@@ -1,4 +1,4 @@
-FROM rust:1.75 as builder
+FROM rust:1.87 as builder
 
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
@@ -6,9 +6,6 @@ COPY src ./src
 COPY migrations ./migrations
 
 RUN cargo install sqlx-cli --no-default-features --features postgres
-RUN cargo sqlx prepare
-
-ENV SQLX_OFFLINE=true
 
 RUN cargo build --release
 
@@ -28,6 +25,6 @@ COPY migrations ./migrations
 
 RUN echo '#!/bin/bash\nset -e\nsqlx migrate run\nexec ./trepi-server' > start.sh && chmod +x start.sh
 
-EXPOSE 8000
+EXPOSE 37567
 
 CMD ["./start.sh"]
